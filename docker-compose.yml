@@ -37,6 +37,7 @@ services:
     networks:
       t2_proxy:
     command: ["npm", "run", "client:dev"]
+    container_name: hab-client
     networks:
       local:
     depends_on:
@@ -54,6 +55,7 @@ services:
   server:
     build: ~/.docker/habitica
     command: ["npm", "start"]
+    container_name: hab-server
     networks:
       local:
     depends_on:
@@ -68,6 +70,7 @@ services:
 
   mongo:
     image: mongo:4.2.8
+    container_name: hab-db
     networks:
       local:
     ports:
