@@ -27,13 +27,13 @@ services:
       - "8000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./portainer/data:/data 
+      - ~/.docker/portainer/data:/data 
     environment:
       - TZ="America/Chicago"
 
 #####################################habitica test########################################################
   client:
-    build: ./habitica
+    build: ~/.docker/habitica
     networks:
       t2_proxy:
     command: ["npm", "run", "client:dev"]
@@ -47,12 +47,12 @@ services:
       - "8085:8080" 
     volumes:
     volumes:
-      - ./habitica:/usr/src/habitica
+      - ~/.docker/habitica:/usr/src/habitica
       #- /usr/src/habitica/node_modules
       #- /usr/src/habitica/website/client/node_modules
 
   server:
-    build: ./habitica
+    build: ~/.docker/habitica
     command: ["npm", "start"]
     networks:
       local:
@@ -63,7 +63,7 @@ services:
     ports:
       - "3005:3000" 
     volumes:
-      - ./habitica:/usr/src/habitica
+      - ~/.docker/habitica:/usr/src/habitica
       #- /usr/src/habitica/node_modules
 
   mongo:
@@ -74,4 +74,4 @@ services:
       - "27017:27017"
     command: --replSet rs
     volumes:
-      - ./habitica/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ~/.docker/habitica/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
