@@ -18,10 +18,10 @@ services:
     image: portainer/portainer-ce:latest
     restart: always
     command: -H unix:///var/run/docker.sock
-    networks:
-      - local
     security_opt:
       - no-new-privileges:true
+    networks:
+      local:
     ports:
       - "9000:9000"
       - "8000:8000"
