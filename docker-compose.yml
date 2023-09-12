@@ -38,12 +38,12 @@ services:
       t2_proxy:
     command: ["npm", "run", "client:dev"]
     container_name: hab-client
-    networks:
-      local:
     depends_on:
       - server
     environment:
       - BASE_URL=http://server:3000 #DON'T CHANGE
+    networks:
+      local:
     ports:
       - "8085:8080" 
     volumes:
@@ -56,12 +56,12 @@ services:
     build: ~/.docker/habitica
     command: ["npm", "start"]
     container_name: hab-server
-    networks:
-      local:
     depends_on:
       - mongo
     environment:
       - NODE_DB_URI=mongodb://mongo/habitrpg
+    networks:
+      local:
     ports:
       - "3005:3000" 
     volumes:
@@ -70,7 +70,7 @@ services:
 
   mongo:
     image: mongo:4.2.8
-    container_name: hab-db
+    container_name: mongo
     networks:
       local:
     ports:
