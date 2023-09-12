@@ -1,36 +1,77 @@
-version: "3"
+version: "3.7"
+
+########################### NETWORKS
+networks:
+  default:
+    driver: bridge
+  local:
+    external:
+      name: local
+
+########################### SERVICES
 services:
 
-  client:
-    build: .
+
+# Portainer - WebUI for Containers
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: always
+    command: -H unix:///var/run/docker.sock
     networks:
-      - habitica
-    environment:
-      - BASE_URL=http://server:3000
+      - local
+    security_opt:
+      - no-new-privileges:true
     ports:
-        - "8080:8080"
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./portainer/data:/data 
+    environment:
+      - TZ="America/Chicago"
+
+#####################################habitica test########################################################
+  client:
+    build: ./habitica
+    networks:
+      t2_proxy:
     command: ["npm", "run", "client:dev"]
+    networks:
+      local:
     depends_on:
       - server
+    environment:
+      - BASE_URL=http://server:3000 #DON'T CHANGE
+    ports:
+      - "8085:8080" 
+    volumes:
+    volumes:
+      - ./habitica:/usr/src/habitica
+      #- /usr/src/habitica/node_modules
+      #- /usr/src/habitica/website/client/node_modules
 
   server:
-    build: .
-    ports:
-      - "3000:3000"
+    build: ./habitica
+    command: ["npm", "start"]
     networks:
-      - habitica
-    environment:
-      - NODE_DB_URI=mongodb://mongo/habitrpg
+      local:
     depends_on:
       - mongo
+    environment:
+      - NODE_DB_URI=mongodb://mongo/habitrpg
+    ports:
+      - "3005:3000" 
+    volumes:
+      - ./habitica:/usr/src/habitica
+      #- /usr/src/habitica/node_modules
 
   mongo:
-    image: mongo:3.6
+    image: mongo:4.2.8
+    networks:
+      local:
     ports:
       - "27017:27017"
-    networks:
-      - habitica
-
-networks:
-  habitica:
-    driver: bridge
+    command: --replSet rs
+    volumes:
+      - ./habitica/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
